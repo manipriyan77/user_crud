@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import UserForm from "./AddUserForm";
+import UserList from "./Users";
 
 function App() {
+  const [shouldUpdateUsers, setShouldUpdateUsers] = useState(false);
+
+  const handleUserAdded = () => {
+    setShouldUpdateUsers(true);
+  };
+
+  useEffect(() => {
+    if (shouldUpdateUsers) {
+      fetch("http://localhost:3000/users")
+        .then((response) => response.json())
+        .then((data) => {
+          setShouldUpdateUsers(false);
+          console.log(data.data);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [shouldUpdateUsers]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <UserForm onUserAdded={handleUserAdded} shouldUpdateUsers={shouldUpdateUsers} />
+      <UserList shouldUpdateUsers={shouldUpdateUsers} />
     </div>
   );
 }
